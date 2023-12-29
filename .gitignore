@@ -3,3 +3,6 @@
 
 # Ignore python cache
 __pycache__/
+
+# Ignore audio files
+*.mp3
