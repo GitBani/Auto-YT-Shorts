@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from urllib.request import urlopen
+import requests
 from dotenv import load_dotenv
 from gtts import gTTS
 from openai import OpenAI
@@ -11,8 +11,9 @@ output_file = 'speech.mp3'
 
 
 
-page = urlopen(url)
-html = page.read().decode("utf-8")
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+response = requests.get(url, headers = headers) 
+html = response.text
 
 
 soup = BeautifulSoup(html, "html.parser")
@@ -41,7 +42,7 @@ text = text.replace('AITA', 'Am I the A-hole')
 text = text.replace('ULPT', 'Unethical life pro tip')
 text = text.replace('\n', '')
 print(len(text))
-
+exit(0)
 
 load_dotenv()
 client = OpenAI()
