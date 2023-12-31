@@ -8,4 +8,5 @@ This project intends to automate the process of creating TTS videos of trending 
 5. Hopefully, I can send a request to automatically post the video
 
 ## TODO FIX
-1. Only 3 posts are acquired from the get request, maybe because of a maximum length being exceeded
+1. Deal with bodyless posts, maybe get top comment.
+2. Deal with posts that don't have any flair
