@@ -1,15 +1,14 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 from gtts import gTTS
+from openai import OpenAI
 from pydub import AudioSegment
 
 
-url = "https://www.reddit.com/r/AmItheAsshole/top/"#'https://www.reddit.com/r/UnethicalLifeProTips/top/'#'https://www.reddit.com/r/Showerthoughts/top/'#
-outputfile = 'speech.mp3'
+url = "https://www.reddit.com/r/AmItheAsshole/top?limit=10/"#'https://www.reddit.com/r/UnethicalLifeProTips/top/'#'https://www.reddit.com/r/TalesFromRetail/top/'#
+output_file = 'speech.mp3'
 
-
-MAX_POST_LENGTH = 1250 # to keep video length under 1 minute
 
 
 page = urlopen(url)
@@ -23,9 +22,11 @@ def post_selector(tag):
     return tag.name == 'shreddit-post'  
 
 
+# body is 4 if there is a flair, else its 3
 posts = soup.find_all(post_selector)
-link_with_post_title = posts[1].find_all('a')[0]
-link_with_post_body = posts[1].find_all('a')[4]
+print(len(posts))
+link_with_post_title = posts[0].find_all('a')[0]
+link_with_post_body = posts[0].find_all('a')[4]
 
 title = link_with_post_title.attrs.get('aria-label')
 
@@ -39,11 +40,18 @@ text = title + body
 text = text.replace('AITA', 'Am I the A-hole')
 text = text.replace('ULPT', 'Unethical life pro tip')
 text = text.replace('\n', '')
-tts = gTTS(text=text, lang='en')
-tts.save(outputfile)
 print(len(text))
 
 
-audio = AudioSegment.from_file(outputfile, format="mp3")
-faster_audio = audio.speedup(playback_speed=1.5)
-faster_audio.export(outputfile, format="mp3") 
+load_dotenv()
+client = OpenAI()
+response = client.audio.speech.create(
+    model = 'tts-1',
+    voice = 'onyx',
+    input = text
+)
+response.stream_to_file(output_file)
+
+audio = AudioSegment.from_file(output_file, format="mp3")
+faster_audio = audio.speedup(playback_speed=1.25)
+faster_audio.export(output_file, format="mp3") 
